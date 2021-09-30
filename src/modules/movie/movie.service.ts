@@ -5,7 +5,8 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Movie, MovieDocument } from './movie.model';
 import { MovieRating, MovieRatingDocument } from './movie-rating.model';
 import { User, UserDocument } from '../user/user.model';
-import { MovieDto, UpdateMovieDto } from './dto';
+import { PageDto } from '../../common/dto';
+import { MovieDto, UpdateMovieDto, MoviePageOptionsDto } from './dto';
 import {
     FailedToCreateMovieException,
     FailedToGetMovieException,
@@ -13,7 +14,6 @@ import {
     FailedToRemoveMovieException,
     FailedToUpdateMovieException
 } from '../../common/exceptions';
-import { PaginationParams } from '../../common/dto/pagination-params.dto';
 
 @Injectable()
 export class MovieService {
@@ -37,14 +37,31 @@ export class MovieService {
         }
     }
 
-    async getAllMovies(paginationParams: PaginationParams): Promise<MovieDto[]> {
+    async getAllMovies(params: MoviePageOptionsDto): Promise<PageDto<MovieDto>> {
         try {
-            const { skip = 0, limit } = paginationParams;
-            const findQuery = this.movieModel.find().skip(Number(skip));
-            if (limit) {
-                findQuery.limit(Number(limit));
+            const { skip = 0, limit = 10, title, tag } = params;
+
+            const filter: any = {};
+            if (title) {
+                filter.title = { $regex: `.*${title}.*`, $options: 'i' };
             }
-            return await findQuery;
+            if (tag) {
+                filter.tags = tag;
+            }
+
+            const [data, itemCount] = await Promise.all([
+                this.movieModel.find(filter).skip(Number(skip)).limit(Number(limit)),
+                this.movieModel.countDocuments(filter)
+            ]);
+
+            return {
+                data,
+                meta: {
+                    itemCount,
+                    skip,
+                    limit
+                }
+            };
         } catch (err) {
             this.logger.error('Failed to get movies');
             this.logger.error(err.toString());

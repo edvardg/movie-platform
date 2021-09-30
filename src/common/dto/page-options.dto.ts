@@ -1,13 +1,13 @@
-import { IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
-export class PaginationParams {
+export class PageOptionsDto {
     @ApiPropertyOptional({
         minimum: 0,
         default: 0,
     })
     @IsOptional()
-    skip?: number;
+    skip?: number = 0;
 
     @ApiPropertyOptional({
         minimum: 1,
@@ -15,5 +15,5 @@ export class PaginationParams {
         default: 10,
     })
     @IsOptional()
-    limit?: number;
+    limit?: number = 10;
 }

@@ -19,12 +19,11 @@ import {
 } from '@nestjs/swagger';
 import { AccessControlGuard } from '../../common/guards/access-control.guard';
 import { UserRoles } from '../../common/decorators/user-roles.decorator';
-import { PaginationParams } from '../../common/dto/pagination-params.dto';
 import { UserRole } from '../../common/constants';
+import { PageDto } from '../../common/dto';
 import { MovieService } from './movie.service';
-import { CreateMovieDto, MovieDto, RateMovieDto, UpdateMovieDto } from './dto';
+import { CreateMovieDto, MovieDto, RateMovieDto, UpdateMovieDto, MoviePageOptionsDto } from './dto';
 import { UserRolesGuard } from '../../common/guards/user-roles.guard';
-import { UpdateUserFavoriteDto, UserDto } from '../user/dto';
 
 @Controller('movies')
 @ApiTags('Movies')
@@ -41,8 +40,8 @@ export class MovieController {
         type: MovieDto,
         description: 'Successfully retrieved movies'
     })
-    async getMovies(@Query() paginationParams: PaginationParams): Promise<MovieDto[]> {
-        return this.movieService.getAllMovies(paginationParams);
+    async getMovies(@Query() params: MoviePageOptionsDto): Promise<PageDto<MovieDto>> {
+        return this.movieService.getAllMovies(params);
     }
 
     @Get('/:id')
@@ -103,6 +102,7 @@ export class MovieController {
     }
 
     @Patch('/:id/rate')
+    @UserRoles(UserRole.USER)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: MovieDto,
