@@ -113,7 +113,7 @@ export class MovieController {
         type: RateMovieDto,
         required: true
     })
-    async updateFavorite(
+    async rateMovie(
         @Req() req,
         @Param('id') movieId: string,
         @Body() { rating }: RateMovieDto
