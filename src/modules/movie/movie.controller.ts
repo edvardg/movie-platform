@@ -68,7 +68,7 @@ export class MovieController {
         required: true
     })
     async createMovie(@Body() data: CreateMovieDto): Promise<MovieDto> {
-        return await this.movieService.createMovie(data);
+        return this.movieService.createMovie(data);
     }
 
     @Put('/:id')

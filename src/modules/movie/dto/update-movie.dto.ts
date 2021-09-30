@@ -1,7 +1,6 @@
-import {IsString, IsEmail, IsOptional, IsNotEmpty, IsEnum} from 'class-validator';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {Trim} from "class-sanitizer";
-import {MovieTag} from "../../../common/constants";
+import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { MovieTag } from '../../../common/constants';
 
 export class UpdateMovieDto {
     @ApiPropertyOptional()

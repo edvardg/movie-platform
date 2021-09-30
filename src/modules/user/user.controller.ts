@@ -20,6 +20,8 @@ import {
 import { AccessControlGuard } from '../../common/guards/access-control.guard';
 import { UserService } from './user.service';
 import { UpdateUserDto, UpdateUserFavoriteDto, UserDto } from './dto';
+import { UserRoles } from '../../common/decorators/user-roles.decorator';
+import { UserRole } from '../../common/constants';
 
 @Controller('users')
 @ApiTags('Users')
@@ -29,6 +31,7 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get('/:id')
+    @UserRoles(UserRole.ADMIN, UserRole.USER)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: UserDto,
@@ -39,6 +42,7 @@ export class UserController {
     }
 
     @Put('/:id')
+    @UserRoles(UserRole.ADMIN, UserRole.USER)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: UserDto,
@@ -60,6 +64,7 @@ export class UserController {
     }
 
     @Patch('/:movieId/favorite')
+    @UserRoles(UserRole.USER)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: UserDto,

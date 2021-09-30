@@ -1,4 +1,4 @@
-import {IsString, IsNotEmpty, IsEmail, MinLength, Matches, IsEnum} from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, MinLength, Matches, IsEnum } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../../common/constants';

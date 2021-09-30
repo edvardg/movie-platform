@@ -1,4 +1,4 @@
-import {IsString, IsNotEmpty, IsDefined, IsEnum, IsArray} from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Trim } from 'class-sanitizer';
 import { MovieTag } from '../../../common/constants';

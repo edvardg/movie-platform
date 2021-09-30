@@ -1,4 +1,4 @@
-import { IsInt, IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RateMovieDto {
