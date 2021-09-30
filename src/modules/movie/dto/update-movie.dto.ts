@@ -23,7 +23,7 @@ export class UpdateMovieDto {
     @IsOptional()
     cast?: string;
 
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({ enum: MovieTag, isArray: true })
     @IsEnum(MovieTag, { each: true })
     @IsOptional()
     tags?: MovieTag[];

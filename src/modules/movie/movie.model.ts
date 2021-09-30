@@ -6,7 +6,7 @@ export type MovieDocument = Movie & Document;
 
 @Schema()
 export class Movie {
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     title: string;
 
     @Prop({ required: true })

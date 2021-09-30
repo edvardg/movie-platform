@@ -106,11 +106,19 @@ export class MovieService {
         const session = await this.connection.startSession();
         session.startTransaction();
         try {
-            await this.movieModel.deleteOne({ _id: movieId }).session(session);
+            await this.movieModel.deleteOne({ _id: movieId }, { session });
 
-            await this.userModel
-                .updateMany({ favorites: movieId }, { $pull: { favorites: movieId } })
-                .session(session);
+            await this.userModel.updateMany(
+                { favorites: movieId },
+                {
+                    $pull: {
+                        favorites: movieId
+                    }
+                },
+                { session }
+            );
+
+            await this.movieRatingModel.deleteMany({ movieId }, { session });
 
             await session.commitTransaction()
         } catch (err) {
@@ -131,8 +139,8 @@ export class MovieService {
             await this.movieRatingModel.updateOne(
                 { movieId, userId },
                 { rating },
-                { upsert: true, new: true }
-            ).session(session);
+                { upsert: true, new: true, session }
+            );
 
             const result = await this.movieRatingModel.aggregate([
                 { $match: { movieId } },
@@ -146,7 +154,11 @@ export class MovieService {
 
             const avgRating = get(result, '[0].avgRating');
 
-            const movie = await this.movieModel.findByIdAndUpdate(movieId, { rating: avgRating.toFixed(1) }, { new: true }).session(session);
+            const movie = await this.movieModel.findByIdAndUpdate(
+                movieId,
+                { rating: avgRating.toFixed(1) },
+                { new: true, session }
+            ).session(session);
             await session.commitTransaction();
 
             return movie;
