@@ -4,18 +4,24 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
     FailedToCreateUserException,
     FailedToGetUserException,
+    FailedToUpdateFavoriteMovieException,
     FailedToUpdateUserException,
-    UserNotFoundException
+    MovieNotFoundException,
+    UserNotFoundException,
 } from '../../common/exceptions';
 import { User, UserDocument } from './user.model';
 import { UpdateUserDto, UserDto } from './dto';
 import { RegisterDto } from '../auth/dto';
+import { Movie, MovieDocument } from '../movie/movie.model';
 
 @Injectable()
 export class UserService {
     private logger: Logger = new Logger(UserService.name);
 
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+    constructor(
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel(Movie.name) private movieModel: Model<MovieDocument>
+    ) {}
 
     async create(data: RegisterDto): Promise<User> {
         try {
@@ -60,10 +66,37 @@ export class UserService {
         return user;
     }
 
+    async updateUserFavoriteMovie(
+        userId: string,
+        movieId: string,
+        isFavorite: boolean,
+    ): Promise<UserDto> {
+
+        let user;
+        try {
+            const movie = await this.movieModel.findById(movieId);
+            if (!movie) {
+                throw new MovieNotFoundException(`No movie found with id: ${movieId}`);
+            }
+            let updateQuery;
+            if (isFavorite) {
+                updateQuery = { $addToSet: { favorites: movieId } };
+            } else {
+                updateQuery = { $pull: { favorites: movieId } };
+            }
+            user = await this.userModel.findOneAndUpdate({ _id: userId }, updateQuery, { new: true });
+        } catch (err) {
+            this.logger.error('Failed to update user favorite movie');
+            this.logger.error(err.toString());
+            throw new FailedToUpdateFavoriteMovieException(err.toString());
+        }
+        return user;
+    }
+
     async getUserByEmail(email, selectPassword = false): Promise<User> {
         if (!selectPassword) {
             return this.userModel.findOne({ email });
         }
-        return this.userModel.findOne({ email }).select('email password').exec();
+        return this.userModel.findOne({ email }).select('email role password').exec();
     }
 }

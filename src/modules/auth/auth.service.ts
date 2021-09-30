@@ -48,8 +48,8 @@ export class AuthService {
     }
 
     private generateToken(user: any): TokenDto {
-        const { _id: userId, email } = user;
-        const accessToken = this.jwtService.sign({ userId, email });
+        const { _id: userId, email, role } = user;
+        const accessToken = this.jwtService.sign({ userId, email, role });
 
         return { accessToken };
     }

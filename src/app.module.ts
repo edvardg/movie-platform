@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { CommonModule } from './common/common.module';
 import { ServiceConfig } from './common/services/config.service';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { MovieModule } from './modules/movie/movie.module';
 
 @Module({
     imports: [
@@ -19,7 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
             inject: [ServiceConfig]
         }),
         AuthModule,
-        UserModule
+        UserModule,
+        MovieModule
     ]
 })
 export class AppModule {}

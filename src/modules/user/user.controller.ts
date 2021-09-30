@@ -9,6 +9,7 @@ import {
     UnauthorizedException,
     HttpCode,
     HttpStatus,
+    Patch,
 } from '@nestjs/common';
 import {
     ApiBearerAuth,
@@ -18,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { AccessControlGuard } from '../../common/guards/access-control.guard';
 import { UserService } from './user.service';
-import { UpdateUserDto, UserDto } from './dto';
+import { UpdateUserDto, UpdateUserFavoriteDto, UserDto } from './dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -56,6 +57,26 @@ export class UserController {
     {
         UserController.validateUserId(req.user.userId, id);
         return this.userService.updateUser(id, data);
+    }
+
+    @Patch('/:movieId/favorite')
+    @HttpCode(HttpStatus.OK)
+    @ApiOkResponse({
+        type: UserDto,
+        description: 'Successfully updated favorite movie'
+    })
+    @ApiBody({
+        description: 'UpdateUserFavoriteDto',
+        type: UpdateUserFavoriteDto,
+        required: true
+    })
+    async updateFavorite(
+        @Req() req,
+        @Param('movieId') movieId: string,
+        @Body() { isFavorite }: UpdateUserFavoriteDto
+    ): Promise<UserDto>
+    {
+        return this.userService.updateUserFavoriteMovie(req.user.userId, movieId, isFavorite);
     }
 
     private static validateUserId(reqUserId: string, id: string): void {

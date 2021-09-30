@@ -13,4 +13,7 @@ export class UserDto {
 
     @ApiPropertyOptional({ enum: UserRole })
     role: UserRole;
+
+    @ApiPropertyOptional()
+    favorites: string[];
 }
